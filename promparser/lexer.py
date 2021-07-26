@@ -13,6 +13,15 @@ class PromQLLexer(Lexer):
         GTE,
         EQL_REGEX,
         NEQ_REGEX,
+        EQL,
+        SUB,
+        ADD,
+        MUL,
+        MOD,
+        DIV,
+        POW,
+        LSS,
+        GTR,
         LAND,
         LOR,
         LUNLESS,
@@ -44,9 +53,14 @@ class PromQLLexer(Lexer):
     ignore = r"\s"
 
     # TODO: BLANK SPACE TIMES
-    literals = {",", ":", ";", "-", "+", "*", "%",
-                "/", "<", ">", "=", "^", "(", ")",
-                "{", "}", "[", "]"}
+    literals = {",", ":", ";", "(", ")", "{", "}", "[", "]"}
+
+    precedence = (
+        ('nonassoc', LSS, GTR, LTE, GTE, EQL, EQLC, NEQ, EQL_REGEX, NEQ_REGEX),
+        ('left', ADD, SUB),
+        ('left', MUL, DIV),
+        ('right', UMINUS),            # Unary minus operator
+    )
 
     # regular expression rules for tokens
     # TODO: use token remapping for keywords
@@ -56,6 +70,15 @@ class PromQLLexer(Lexer):
     GTE = r">="
     EQL_REGEX = r"=~"
     NEQ_REGEX = r"!~"
+    EQL = r"="
+    SUB = r"-"
+    ADD = r"\+"
+    MUL = r"\*"
+    MOD = r"%"
+    DIV = r"\/"
+    POW = r"\^"
+    LSS = r"<"
+    GTR = r">"
     LAND = r"and"
     LOR = r"or"
     LUNLESS = r"unless"
@@ -82,7 +105,7 @@ class PromQLLexer(Lexer):
     START = r"start"
     END = r"end"
 
-    @_(r"[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?",
+    @_(r"[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?",
        r"0[xX][0-9a-fA-F]+",
        r"[nN][aA][nN]",
        r"[iI][nN][fF]")
