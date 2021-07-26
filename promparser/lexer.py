@@ -7,33 +7,12 @@ class PromQLLexer(Lexer):
     tokens = {
         NUMBER,
         IDENTIFIER,
-        LEFT_PAREN,
-        RIGHT_PAREN,
-        LEFT_BRACE,
-        RIGHT_BRACE,
-        LEFT_BRACKET,
-        RIGHT_BRACKET,
-        COMMA,
-        COLON,
-        SEMICOLON,
-        BLANK,
-        TIMES,
-        SPACE,
-        SUB,
-        ADD,
-        MUL,
-        MOD,
-        DIV,
         EQLC,
         NEQ,
         LTE,
-        LSS,
         GTE,
-        GTR,
         EQL_REGEX,
         NEQ_REGEX,
-        EQL,
-        POW,
         LAND,
         LOR,
         LUNLESS,
@@ -64,34 +43,19 @@ class PromQLLexer(Lexer):
     # string of characters to ignore between tokens
     ignore = r"\s"
 
+    # TODO: BLANK SPACE TIMES
+    literals = {",", ":", ";", "-", "+", "*", "%",
+                "/", "<", ">", "=", "^", "(", ")",
+                "{", "}", "[", "]"}
+
     # regular expression rules for tokens
-    LEFT_PAREN = r"\("
-    RIGHT_PAREN = r"\)"
-    LEFT_BRACE = r"\{"
-    RIGHT_BRACE = r"\}"
-    LEFT_BRACKET = r"\["
-    RIGHT_BRACKET = r"\]"
-    COMMA = r","
-    COLON = r":"
-    SEMICOLON = r";"
-    BLANK = r"_"
-    TIMES = r"x"
-    SPACE = r"<space>"
-    SUB = r"-"
-    ADD = r"\+"
-    MUL = r"\*"
-    MOD = r"%"
-    DIV = r"/"
+    # TODO: use token remapping for keywords
     EQLC = r"=="
     NEQ = r"!="
     LTE = r"<="
-    LSS = r"<"
     GTE = r">="
-    GTR = r">"
     EQL_REGEX = r"=~"
     NEQ_REGEX = r"!~"
-    EQL = r"="
-    POW = r"\^"
     LAND = r"and"
     LOR = r"or"
     LUNLESS = r"unless"
@@ -125,6 +89,7 @@ class PromQLLexer(Lexer):
     def NUMBER(self, t):
         # TODO signed hex, inf, (nan ?)
         if t.value.startswith('0x') or t.value.startswith('0X'):
+            # TODO greedy hex
             t.value = int(t.value[2:], 16)
         else:
             t.value = float(t.value)
@@ -134,6 +99,11 @@ class PromQLLexer(Lexer):
     def IDENTIFIER(self, t):
         t.value = str(t.value)
         return t
+
+    def error(self, t):
+        self.index += 1
+        return t
+
 
 if __name__ == '__main__':
     def lex(expr):
