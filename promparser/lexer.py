@@ -4,6 +4,11 @@ import ply.lex as lex
 
 class Lexer():
 
+    # lexer states for conditional lexing
+    states = (
+        ("time", "inclusive"),
+    )
+
     # string of characters to ignore between tokens
     t_ignore = " \t"
 
@@ -46,6 +51,7 @@ class Lexer():
 
     # set of token names
     tokens = [
+        "DURATION",
         "NUMBER",
         "IDENTIFIER",
         "LEFT_PAREN",
@@ -81,8 +87,6 @@ class Lexer():
     t_RIGHT_PAREN = r"\)"
     t_LEFT_BRACE = r"{"
     t_RIGHT_BRACE = r"}"
-    t_LEFT_BRACKET = r"\["
-    t_RIGHT_BRACKET = r"\]"
     t_COMMA = r","
     t_COLON = r":"
     t_SEMICOLON = r";"
@@ -102,6 +106,33 @@ class Lexer():
     t_EQL_REGEX = r"=~"
     t_NEQ_REGEX = r"!~"
     t_POW = r"\^"
+
+    def t_LEFT_BRACKET(self, t):
+        r"\["
+        t.lexer.push_state("time")
+        return t
+
+    def t_RIGHT_BRACKET(self, t):
+        r"\]"
+        t.lexer.pop_state()
+        return t
+
+    year = r"(([0-9]+)y)?"
+    week = r"(([0-9]+)w)?"
+    day = r"(([0-9]+)d)?"
+    hour = r"(([0-9]+)h)?"
+    minute = r"(([0-9]+)m)?"
+    second = r"(([0-9]+)s)?"
+    msecond = r"(([0-9]+)ms)?"
+    instant = r"0"
+    # TODO official regex (below) matches empty string
+    # interval = year + week + day + hour + minute + second + msecond
+    interval = r"(([0-9]+)(y|w|d|h|m|s|ms))+"
+    duration = r"(" + interval + r"|" + instant + r")"
+
+    @TOKEN(duration)
+    def t_time_DURATION(self, t):
+        return t
 
     decnum = r"[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?"
     hexnum = r"0[xX][0-9a-fA-F]+"

@@ -41,9 +41,19 @@ class TestCommon(unittest.TestCase):
 
     def test_duration(self):
         tokens = self.tokens("[5m]")
-        for tok in tokens:
-            print(token_type(tok), token_value(tok))
+        self.assertEqual(len(tokens), 3)
+        self.assertEqual(token_type(tokens[0]), "LEFT_BRACKET")
+        self.assertEqual(token_type(tokens[1]), "DURATION")
+        self.assertEqual(token_value(tokens[1]), "5m")
+        self.assertEqual(token_type(tokens[2]), "RIGHT_BRACKET")
 
+    def test_duration_with_spaces(self):
+        tokens = self.tokens("[ 5m ]")
+        self.assertEqual(len(tokens), 3)
+        self.assertEqual(token_type(tokens[0]), "LEFT_BRACKET")
+        self.assertEqual(token_type(tokens[1]), "DURATION")
+        self.assertEqual(token_value(tokens[1]), "5m")
+        self.assertEqual(token_type(tokens[2]), "RIGHT_BRACKET")
 
 if __name__ == '__main__':
     unittest.main()
