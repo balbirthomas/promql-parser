@@ -1,36 +1,48 @@
 import unittest
-from promparser import PromQLLexer
+from promparser import Lexer
+
+
+def token_type(token):
+    return token[0]
+
+
+def token_value(token):
+    return token[1]
 
 
 class TestCommon(unittest.TestCase):
 
     def setUp(self):
-        self.lexer = PromQLLexer()
+        self.lexer = Lexer()
+        self.lexer.build()
 
-    def tokens(self, input):
-        return list(self.lexer.tokenize(input))
+    def tokens(self, data):
+        tokens = []
+        for tok in self.lexer.get_tokens(data):
+            tokens.append((tok.type, tok.value))
+        return tokens
 
     def test_comma(self):
         tokens = self.tokens(",")
         self.assertEqual(len(tokens), 1)
-        self.assertEqual(tokens[0].type, "COMMA")
+        self.assertEqual(token_type(tokens[0]), "COMMA")
 
     def test_empty_parenthesis(self):
         tokens = self.tokens("()")
         self.assertEqual(len(tokens), 2)
-        self.assertEqual(tokens[0].type, "LEFT_PAREN")
-        self.assertEqual(tokens[1].type, "RIGHT_PAREN")
+        self.assertEqual(token_type(tokens[0]), "LEFT_PAREN")
+        self.assertEqual(token_type(tokens[1]), "RIGHT_PAREN")
 
     def test_empty_braces(self):
         tokens = self.tokens("{}")
         self.assertEqual(len(tokens), 2)
-        self.assertEqual(tokens[0].type, "LEFT_BRACE")
-        self.assertEqual(tokens[1].type, "RIGHT_BRACE")
+        self.assertEqual(token_type(tokens[0]), "LEFT_BRACE")
+        self.assertEqual(token_type(tokens[1]), "RIGHT_BRACE")
 
     def test_duration(self):
         tokens = self.tokens("[5m]")
         for tok in tokens:
-            print(tok.type, tok.value)
+            print(token_type(tok), token_value(tok))
 
 
 if __name__ == '__main__':
