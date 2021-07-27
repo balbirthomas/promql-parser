@@ -10,7 +10,7 @@ class Lexer():
     )
 
     # string of characters to ignore between tokens
-    t_ignore = " \t"
+    t_ignore = " \t\r\n"
 
     precedence = (
         ('nonassoc', "LSS", "GTR", "LTE", "GTE", "EQL", "EQLC", "NEQ",

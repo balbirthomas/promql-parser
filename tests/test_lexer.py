@@ -55,5 +55,10 @@ class TestCommon(unittest.TestCase):
         self.assertEqual(token_value(tokens[1]), "5m")
         self.assertEqual(token_type(tokens[2]), "RIGHT_BRACKET")
 
+    def test_linefeed(self):
+        tokens = self.tokens("\r\n\r")
+        self.assertEqual(len(tokens), 0)
+
+
 if __name__ == '__main__':
     unittest.main()
