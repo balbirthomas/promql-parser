@@ -1,1 +1,1 @@
-from .lexer import PromQLLexer
+from .lexer import Lexer

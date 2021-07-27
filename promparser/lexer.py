@@ -1,131 +1,116 @@
-from sly import Lexer
+from ply.lex import TOKEN
+import ply.lex as lex
 
 
-class PromQLLexer(Lexer):
-
-    # set of token names
-    tokens = {
-        NUMBER,
-        IDENTIFIER,
-        LEFT_PAREN,
-        RIGHT_PAREN,
-        LEFT_BRACE,
-        RIGHT_BRACE,
-        LEFT_BRACKET,
-        RIGHT_BRACKET,
-        COMMA,
-        COLON,
-        SEMICOLON,
-        EQLC,
-        NEQ,
-        LTE,
-        GTE,
-        EQL_REGEX,
-        NEQ_REGEX,
-        EQL,
-        SUB,
-        ADD,
-        MUL,
-        MOD,
-        DIV,
-        POW,
-        LSS,
-        GTR,
-        LAND,
-        LOR,
-        LUNLESS,
-        SUM,
-        AVG,
-        COUNT,
-        MIN,
-        MAX,
-        GROUP,
-        STDDEV,
-        STDVAR,
-        TOPK,
-        BOTTOMK,
-        COUNT_VALUES,
-        QUANTILE,
-        OFFSET,
-        BY,
-        WITHOUT,
-        ON,
-        IGNORING,
-        GROUP_LEFT,
-        GROUP_RIGHT,
-        BOOL,
-        START,
-        END,
-    }
+class Lexer():
 
     # string of characters to ignore between tokens
-    ignore = r"\s"
+    t_ignore = " \t"
 
     precedence = (
-        ('nonassoc', LSS, GTR, LTE, GTE, EQL, EQLC, NEQ, EQL_REGEX, NEQ_REGEX),
-        ('left', ADD, SUB),
-        ('left', MUL, DIV),
-        ('right', UMINUS),            # Unary minus operator
+        ('nonassoc', "LSS", "GTR", "LTE", "GTE", "EQL", "EQLC", "NEQ",
+         "EQL_REGEX", "NEQ_REGEX"),
+        ('left', "ADD", "SUB"),
+        ('left', "MUL", "DIV"),
+        ('right', "UMINUS"),            # Unary minus operator
     )
 
-    # regular expression rules for tokens
-    # TODO: use token remapping for keywords
-    # TODO: BLANK SPACE TIMES
-    LEFT_PAREN = r"\("
-    RIGHT_PAREN = r"\)"
-    LEFT_BRACE = r"{"
-    RIGHT_BRACE = r"}"
-    LEFT_BRACKET = r"\["
-    RIGHT_BRACKET = r"\]"
-    COMMA = r","
-    COLON = r":"
-    SEMICOLON = r";"
-    EQLC = r"=="
-    NEQ = r"!="
-    LTE = r"<="
-    GTE = r">="
-    EQL_REGEX = r"=~"
-    NEQ_REGEX = r"!~"
-    EQL = r"="
-    SUB = r"-"
-    ADD = r"\+"
-    MUL = r"\*"
-    MOD = r"%"
-    DIV = r"\/"
-    POW = r"\^"
-    LSS = r"<"
-    GTR = r">"
-    LAND = r"and"
-    LOR = r"or"
-    LUNLESS = r"unless"
-    SUM = r"sum"
-    AVG = r"avg"
-    COUNT = r"count"
-    MIN = r"min"
-    MAX = r"max"
-    GROUP = r"group"
-    STDDEV = r"stddev"
-    STDVAR = r"stdvar"
-    TOPK = r"topk"
-    BOTTOMK = r"bottomk"
-    COUNT_VALUES = r"count_values"
-    QUANTILE = r"quantile"
-    OFFSET = r"offset"
-    BY = r"by"
-    WITHOUT = r"without"
-    ON = r"on"
-    IGNORING = r"ignoring"
-    GROUP_LEFT = r"group_left"
-    GROUP_RIGHT = r"group_right"
-    BOOL = r"bool"
-    START = r"start"
-    END = r"end"
+    # reserved keywords
+    reserved = {
+        "and": "LAND",
+        "or": "LOR",
+        "unless": "LUNLESS",
+        "sum": "SUM",
+        "avg": "AVG",
+        "count": "COUNT",
+        "min": "MIN",
+        "max": "MAX",
+        "group": "GROUP",
+        "stddev": "STDDEV",
+        "stdvar": "STDVAR",
+        "topk": "TOPK",
+        "bottomk": "BOTTOMK",
+        "count_values": "COUNT_VALUES",
+        "quantile": "QUANTILE",
+        "offset": "OFFSET",
+        "by": "BY",
+        "without": "WITHOUT",
+        "on": "ON",
+        "ignoring": "IGNORING",
+        "group_left": "GROUP_LEFT",
+        "group_right": "GROUP_RIGHT",
+        "bool": "BOOL",
+        "start": "START",
+        "end": "END",
+    }
 
-    @_(r"[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?",
-       r"0[xX][0-9a-fA-F]+",
-       r"[nN][aA][nN]",
-       r"[iI][nN][fF]")
-    def NUMBER(self, t):
+    # set of token names
+    tokens = [
+        "NUMBER",
+        "IDENTIFIER",
+        "LEFT_PAREN",
+        "RIGHT_PAREN",
+        "LEFT_BRACE",
+        "RIGHT_BRACE",
+        "LEFT_BRACKET",
+        "RIGHT_BRACKET",
+        "COMMA",
+        "COLON",
+        "SEMICOLON",
+        "BLANK",
+        "EQL",
+        "SUB",
+        "ADD",
+        "MUL",
+        "MOD",
+        "DIV",
+        "EQLC",
+        "NEQ",
+        "LTE",
+        "LSS",
+        "GTE",
+        "GTR",
+        "EQL_REGEX",
+        "NEQ_REGEX",
+        "POW",
+    ] + list(reserved.values())
+
+    # regular expression rules for tokens
+    # TODO: SPACE TIMES
+    t_LEFT_PAREN = r"\("
+    t_RIGHT_PAREN = r"\)"
+    t_LEFT_BRACE = r"{"
+    t_RIGHT_BRACE = r"}"
+    t_LEFT_BRACKET = r"\["
+    t_RIGHT_BRACKET = r"\]"
+    t_COMMA = r","
+    t_COLON = r":"
+    t_SEMICOLON = r";"
+    t_BLANK = r"_"
+    t_EQL = r"="
+    t_SUB = r"-"
+    t_ADD = r"\+"
+    t_MUL = r"\*"
+    t_MOD = r"%"
+    t_DIV = r"\/"
+    t_EQLC = r"=="
+    t_NEQ = r"!="
+    t_LTE = r"<="
+    t_LSS = r"<"
+    t_GTE = r">="
+    t_GTR = r">"
+    t_EQL_REGEX = r"=~"
+    t_NEQ_REGEX = r"!~"
+    t_POW = r"\^"
+
+    decnum = r"[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?"
+    hexnum = r"0[xX][0-9a-fA-F]+"
+    infnum = r"[iI][nN][fF]"
+    nannum = r"[nN][aA][nN]"
+    number = decnum + r"|" + hexnum + r"|" + infnum + r"|" + nannum
+
+    @TOKEN(number)
+    def t_NUMBER(self, t):
         # TODO signed hex, inf, (nan ?)
         if t.value.startswith('0x') or t.value.startswith('0X'):
             # TODO greedy hex
@@ -134,22 +119,24 @@ class PromQLLexer(Lexer):
             t.value = float(t.value)
         return t
 
-    @_(r"[a-zA-Z_]+[a-zA-Z0-9_]*")
-    def IDENTIFIER(self, t):
-        t.value = str(t.value)
+    def t_IDENTIFIER(self, t):
+        r"[a-zA-Z_]+[a-zA-Z0-9_]*"
+        t.type = self.reserved.get(t.value, "IDENTIFIER")
         return t
 
-    def error(self, t):
+    def t_error(self, t):
         print("Illegal character '%s'" % t.value[0])
-        self.index += 1
+        t.lexer.skip(1)
         return t
+
+    def build(self, **kwargs):
+        self.lexer = lex.lex(module=self, **kwargs)
+
+    def get_tokens(self, data):
+        self.lexer.input(data)
+        for tok in self.lexer:
+            yield tok
 
 
 if __name__ == '__main__':
-    def lex(expr):
-        lexer = PromQLLexer()
-        for tok in lexer.tokenize(expr):
-            print('type=%r, value=%r' % (tok.type, tok.value))
-
-    expr = '-1.67e-7'
-    lex(expr)
+    lex.runmain()
