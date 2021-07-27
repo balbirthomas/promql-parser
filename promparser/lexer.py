@@ -7,6 +7,15 @@ class PromQLLexer(Lexer):
     tokens = {
         NUMBER,
         IDENTIFIER,
+        LEFT_PAREN,
+        RIGHT_PAREN,
+        LEFT_BRACE,
+        RIGHT_BRACE,
+        LEFT_BRACKET,
+        RIGHT_BRACKET,
+        COMMA,
+        COLON,
+        SEMICOLON,
         EQLC,
         NEQ,
         LTE,
@@ -52,9 +61,6 @@ class PromQLLexer(Lexer):
     # string of characters to ignore between tokens
     ignore = r"\s"
 
-    # TODO: BLANK SPACE TIMES
-    literals = {",", ":", ";", "(", ")", "{", "}", "[", "]"}
-
     precedence = (
         ('nonassoc', LSS, GTR, LTE, GTE, EQL, EQLC, NEQ, EQL_REGEX, NEQ_REGEX),
         ('left', ADD, SUB),
@@ -64,6 +70,16 @@ class PromQLLexer(Lexer):
 
     # regular expression rules for tokens
     # TODO: use token remapping for keywords
+    # TODO: BLANK SPACE TIMES
+    LEFT_PAREN = r"\("
+    RIGHT_PAREN = r"\)"
+    LEFT_BRACE = r"{"
+    RIGHT_BRACE = r"}"
+    LEFT_BRACKET = r"\["
+    RIGHT_BRACKET = r"\]"
+    COMMA = r","
+    COLON = r":"
+    SEMICOLON = r";"
     EQLC = r"=="
     NEQ = r"!="
     LTE = r"<="
@@ -124,6 +140,7 @@ class PromQLLexer(Lexer):
         return t
 
     def error(self, t):
+        print("Illegal character '%s'" % t.value[0])
         self.index += 1
         return t
 
